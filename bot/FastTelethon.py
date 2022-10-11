@@ -218,6 +218,19 @@ class ParallelTransferrer:
             part_count,
         )
 
+    async def _init_upload(
+        self, connections: int, file_id: int, part_count: int, big: bool
+    ) -> None:
+        self.senders = [
+            await self._create_upload_sender(file_id, part_count, big, 0, connections),
+            *await asyncio.gather(
+                *[
+                    self._create_upload_sender(file_id, part_count, big, i, connections)
+                    for i in range(1, connections)
+                ]
+            ),
+        ]
+
     async def _create_upload_sender(
         self, file_id: int, part_count: int, big: bool, index: int, stride: int
     ) -> UploadSender:
