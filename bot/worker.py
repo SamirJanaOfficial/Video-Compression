@@ -5,6 +5,23 @@ from .FastTelethon import download_file, upload_file
 from .funcn import *
 from .config import *
 
+
+async def stats(e):
+    try:
+        wah = e.pattern_match.group(1).decode("UTF-8")
+        wh = decode(wah)
+        out, dl, id = wh.split(";")
+        ot = hbs(int(Path(out).stat().st_size))
+        ov = hbs(int(Path(dl).stat().st_size))
+        ans = f"Downloaded:\n{ov}\n\nCompressing:\n{ot}"
+        await e.answer(ans, cache_time=0, alert=True)
+    except Exception as er:
+        LOGS.info(er)
+        await e.answer(
+            "Someting Went Wrong.\nSend Media Again.", cache_time=0, alert=True
+        )
+
+
 async def dl_link(event):
     if not event.is_private:
         return
